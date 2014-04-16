@@ -105,6 +105,22 @@ AC_SUBST([CYTHON_SUB])
 AS_COMPILER_FLAGS(GLOBAL_CFLAGS, "-Wall -Wextra -Wmissing-declarations -Wredundant-decls -Wshadow -Wpointer-arith  -Wwrite-strings -Wswitch-default -Wno-unused-parameter")
 AC_SUBST(GLOBAL_CFLAGS)
 
+dnl Check for valgrind (optional) for make check.
+AC_CHECK_PROG(VALGRIND, valgrind, valgrind)
+if test "$VALGRIND" = ""; then
+        AC_MSG_WARN([Valgrind is missing. checks will run without])
+fi
+if test "$VALGRIND" != ""; then
+dnl due to stupid m4 I had to double the [ and ] in the regexp
+        vg_ver=`valgrind --version | sed -e  's/.*-\([[0-9]]\)\.[[0-9]].*/\1/'`
+        VALGRIND="$VALGRIND --tool=memcheck --leak-check=yes --num-callers=10 --error-exitcode=128"
+        if test "$vg_ver" != "3" ; then
+           VALGRIND="$VALGRIND --logfile-fd=-1"
+        fi
+fi
+AC_SUBST(VALGRIND)
+
+
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_OUTPUT([

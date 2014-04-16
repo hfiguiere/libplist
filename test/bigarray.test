@@ -8,4 +8,4 @@ if ! test -d "$DATAOUT"; then
 	mkdir -p $DATAOUT
 fi
 
-$top_builddir/test/plist_test $DATASRC/$TESTFILE $DATAOUT/$TESTFILE.out
+$VALGRIND $top_builddir/test/plist_test $DATASRC/$TESTFILE $DATAOUT/$TESTFILE.out

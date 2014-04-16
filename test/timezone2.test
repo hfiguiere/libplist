@@ -16,6 +16,6 @@ TZ=UTC $top_builddir/tools/plistutil -i $DATAOUT0 -o $DATAOUT1
 TZ=Asia/Singapore $top_builddir/tools/plistutil -i $DATAOUT0 -o $DATAOUT2
 TZ=US/Pacific $top_builddir/tools/plistutil -i $DATAOUT0 -o $DATAOUT3
 
-$top_builddir/test/plist_cmp $DATAIN0 $DATAOUT1
-$top_builddir/test/plist_cmp $DATAIN0 $DATAOUT2
-$top_builddir/test/plist_cmp $DATAIN0 $DATAOUT3
+$VALGRIND $top_builddir/test/plist_cmp $DATAIN0 $DATAOUT1
+$VALGRIND $top_builddir/test/plist_cmp $DATAIN0 $DATAOUT2
+$VALGRIND $top_builddir/test/plist_cmp $DATAIN0 $DATAOUT3
