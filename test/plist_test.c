@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     uint32_t size_out2 = 0;
     char *file_in = NULL;
     char *file_out = NULL;
-    struct stat *filestats = (struct stat *) malloc(sizeof(struct stat));
+    struct stat filestats;
     if (argc != 3)
     {
         printf("Wrong input\n");
@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
         return 2;
     }
     printf("File %s is open\n", file_in);
-    stat(file_in, filestats);
-    size_in = filestats->st_size;
+    stat(file_in, &filestats);
+    size_in = filestats.st_size;
     plist_xml = (char *) malloc(sizeof(char) * (size_in + 1));
     fread(plist_xml, sizeof(char), size_in, iplist);
     fclose(iplist);
@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
     if (!root_node1)
     {
         printf("PList XML parsing failed\n");
+        free(plist_xml);
         return 3;
     }
     else
@@ -83,6 +84,7 @@ int main(int argc, char *argv[])
     plist_to_bin(root_node1, &plist_bin, &size_out);
     if (!plist_bin)
     {
+        free(plist_xml);
         printf("PList BIN writing failed\n");
         return 4;
     }
@@ -92,6 +94,7 @@ int main(int argc, char *argv[])
     plist_from_bin(plist_bin, size_out, &root_node2);
     if (!root_node2)
     {
+        free(plist_xml);
         printf("PList BIN parsing failed\n");
         return 5;
     }
@@ -101,6 +104,7 @@ int main(int argc, char *argv[])
     plist_to_xml(root_node2, &plist_xml2, &size_out2);
     if (!plist_xml2)
     {
+        free(plist_xml);
         printf("PList XML writing failed\n");
         return 8;
     }
@@ -120,7 +124,6 @@ int main(int argc, char *argv[])
     free(plist_bin);
     free(plist_xml);
     free(plist_xml2);
-    free(filestats);
 
     if ((uint32_t)size_in != size_out2)
     {

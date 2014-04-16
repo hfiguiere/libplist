@@ -41,22 +41,24 @@ int main(int argc, char *argv[])
     uint32_t size = 0;
     int read_size = 0;
     char *plist_entire = NULL;
-    struct stat *filestats = (struct stat *) malloc(sizeof(struct stat));
+    struct stat filestats;
     Options *options = parse_arguments(argc, argv);
 
     if (!options)
     {
         print_usage();
-        free(filestats);
         return 0;
     }
     //read input file
     iplist = fopen(options->in_file, "rb");
     if (!iplist)
+    {
+        free(options);
         return 1;
-    stat(options->in_file, filestats);
-    plist_entire = (char *) malloc(sizeof(char) * (filestats->st_size + 1));
-    read_size = fread(plist_entire, sizeof(char), filestats->st_size, iplist);
+    }
+    stat(options->in_file, &filestats);
+    plist_entire = (char *) malloc(sizeof(char) * (filestats.st_size + 1));
+    read_size = fread(plist_entire, sizeof(char), filestats.st_size, iplist);
     fclose(iplist);
 
 
@@ -75,7 +77,6 @@ int main(int argc, char *argv[])
     }
     plist_free(root_node);
     free(plist_entire);
-    free(filestats);
 
     if (plist_out)
     {
@@ -83,7 +84,10 @@ int main(int argc, char *argv[])
         {
             FILE *oplist = fopen(options->out_file, "wb");
             if (!oplist)
+            {
+                free(options);
                 return 1;
+            }
             fwrite(plist_out, size, sizeof(char), oplist);
             fclose(oplist);
         }
